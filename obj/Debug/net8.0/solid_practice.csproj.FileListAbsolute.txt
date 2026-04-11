@@ -1,0 +1,15 @@
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/bin/Debug/net8.0/solid_practice
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/bin/Debug/net8.0/solid_practice.deps.json
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/bin/Debug/net8.0/solid_practice.runtimeconfig.json
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/bin/Debug/net8.0/solid_practice.dll
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/bin/Debug/net8.0/solid_practice.pdb
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/solid_practice.GeneratedMSBuildEditorConfig.editorconfig
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/solid_practice.AssemblyInfoInputs.cache
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/solid_practice.AssemblyInfo.cs
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/solid_practice.csproj.CoreCompileInputs.cache
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/solid_practice.sourcelink.json
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/solid_practice.dll
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/refint/solid_practice.dll
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/solid_practice.pdb
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/solid_practice.genruntimeconfig.cache
+/media/nafis-ahamed/OS/CPS/practice_solid/solid_practice/obj/Debug/net8.0/ref/solid_practice.dll
