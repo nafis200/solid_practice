@@ -1,154 +1,63 @@
-﻿// CORE LAYER
-
-public interface IGradeStrategy
+﻿
+public interface Isound
 {
-    bool IsMatch(int marks);
-    string Calculate(int marks);
+    public void Speak();
+}
+class Dog : Isound
+{
+    public void Speak() => Console.WriteLine("Woof");
 }
 
-public interface IStudentRepository
+class Cat : Isound
 {
-    void Save(string name, int marks, string grade);
+    public void Speak() => Console.WriteLine("Meow");
 }
 
-// INFRASTRUCTURE LAYER
-
-public class APlusGradeStrategy : IGradeStrategy
+public abstract class AnimalFactory
 {
-    public bool IsMatch(int marks)
-    {
-        return marks >= 80;
-    }
-
-    public string Calculate(int marks)
-    {
-        return "A+";
-    }
+    public abstract Isound Create();
 }
 
-public class AGradeStrategy : IGradeStrategy
+public class catFactory : AnimalFactory
 {
-    public bool IsMatch(int marks)
+    public override Isound Create()
     {
-        return marks >= 70 && marks <= 79;
-    }
-
-    public string Calculate(int marks)
-    {
-        return "A";
+        return new Cat();
     }
 }
 
-public class AMinusGradeStrategy : IGradeStrategy
+public class DogFactory : AnimalFactory
 {
-    public bool IsMatch(int marks)
+    public override Isound Create()
     {
-        return marks >= 60 && marks <= 69;
-    }
-
-    public string Calculate(int marks)
-    {
-        return "A-";
+        return new Dog();
     }
 }
 
-public class BGradeStrategy : IGradeStrategy
+class AnimalService
 {
-    public bool IsMatch(int marks)
+    public AnimalFactory animal;
+    public AnimalService(AnimalFactory animal)
     {
-        return marks >= 50 && marks <= 59;
+        this.animal = animal;
     }
-
-    public string Calculate(int marks)
+    public void Sound()
     {
-        return "A";
+        Isound sound = animal.Create();
+        sound.Speak();
     }
 }
-
-public class FailGradeStrategy : IGradeStrategy
-{
-    public bool IsMatch(int marks)
-    {
-        return marks < 50;
-    }
-
-    public string Calculate(int marks)
-    {
-        return "Fail";
-    }
-}
-
-
-public class FakeDatabase : IStudentRepository
-{
-    public void Save(string name, int marks, string grade)
-    {
-        Console.WriteLine("=================================");
-        Console.WriteLine($"Saved Student Record");
-        Console.WriteLine($"Name : {name}");
-        Console.WriteLine($"Marks: {marks}");
-        Console.WriteLine($"Grade: {grade}");
-        Console.WriteLine("=================================\n");
-    }
-}
-
-// Services Layer
-
-public class Services
-{
-    private List<IGradeStrategy> list;
-    private IStudentRepository studentrepository;
-
-    public Services(List<IGradeStrategy> list, IStudentRepository studentrepository)
-    {
-        this.list = list;
-        this.studentrepository = studentrepository;
-    }
-
-    public void processStudent(string name, int marks)
-    {
-        IGradeStrategy strategy = null;
-
-        foreach (var item in list)
-        {
-            if (item.IsMatch(marks))
-            {
-                strategy = item;
-                break;
-            }
-        }
-        if (strategy != null)
-        {
-            string gradeSheet = strategy.Calculate(marks);
-            studentrepository.Save(name, marks, gradeSheet);
-        }
-
-    }
-
-}
-
-
-// PRESENTATION LAYER
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        IStudentRepository studentRepository = new FakeDatabase();
-        List<IGradeStrategy> gradeStrategies = new List<IGradeStrategy>
-        {
-          new APlusGradeStrategy(),
-          new AGradeStrategy(),
-          new AMinusGradeStrategy(),
-          new BGradeStrategy(),
-          new FailGradeStrategy()
-        };
+        AnimalFactory cats = new catFactory();
+        AnimalFactory dogs = new DogFactory();
 
-        Services services = new Services(gradeStrategies, studentRepository);
-        services.processStudent("Nafis", 100);
-        services.processStudent("murad", 80);
-        services.processStudent("rakesh",59);
-        services.processStudent("Suvo",27);
-
+        AnimalService service = new AnimalService(cats);
+        service.Sound();
+        service = new AnimalService(dogs);
+        service.Sound();
     }
 }
