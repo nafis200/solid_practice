@@ -1,63 +1,91 @@
 ﻿
-public interface Isound
+public interface IButton
 {
-    public void Speak();
-}
-class Dog : Isound
-{
-    public void Speak() => Console.WriteLine("Woof");
+    void Render();
 }
 
-class Cat : Isound
+public interface ITextBox
 {
-    public void Speak() => Console.WriteLine("Meow");
+    void Render();
 }
 
-public abstract class AnimalFactory
+class LightButton : IButton
 {
-    public abstract Isound Create();
+    public void Render() => Console.WriteLine("Light Button");
 }
 
-public class catFactory : AnimalFactory
+class DarkButton : IButton
 {
-    public override Isound Create()
+    public void Render() => Console.WriteLine("Dark Button");
+}
+
+class LightTextBox : ITextBox
+{
+    public void Render() => Console.WriteLine("Light TextBox");
+}
+
+class DarkTextBox : ITextBox
+{
+    public void Render() => Console.WriteLine("Dark TextBox");
+}
+
+public interface UIFactory
+{
+    IButton createButton();
+    ITextBox createTextBox();
+}
+
+class LigthFactory : UIFactory
+{
+    public IButton createButton()
     {
-        return new Cat();
+        return new LightButton();
+    }
+    public ITextBox createTextBox()
+    {
+        return new LightTextBox();
     }
 }
 
-public class DogFactory : AnimalFactory
+class DarkFactory : UIFactory
 {
-    public override Isound Create()
+    public IButton createButton()
     {
-        return new Dog();
+        return new DarkButton();
+    }
+    public ITextBox createTextBox()
+    {
+        return new DarkTextBox();
     }
 }
 
-class AnimalService
+class Services
 {
-    public AnimalFactory animal;
-    public AnimalService(AnimalFactory animal)
+    private UIFactory factory;
+    public Services(UIFactory factory)
     {
-        this.animal = animal;
+        this.factory = factory;
     }
-    public void Sound()
+
+    public void drawUi()
     {
-        Isound sound = animal.Create();
-        sound.Speak();
+        IButton button = factory.createButton();
+        ITextBox box = factory.createTextBox();
+        button.Render();
+        box.Render();
     }
 }
 
-class Program
+class Program()
 {
-    static void Main()
+    static void Main(string[] args)
     {
-        AnimalFactory cats = new catFactory();
-        AnimalFactory dogs = new DogFactory();
+        UIFactory factory = new LigthFactory();
+        Services services = new Services(factory);
+        services.drawUi();
 
-        AnimalService service = new AnimalService(cats);
-        service.Sound();
-        service = new AnimalService(dogs);
-        service.Sound();
+        factory = new DarkFactory();
+        services = new Services(factory);
+        services.drawUi();
     }
 }
