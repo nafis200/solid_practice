@@ -1,91 +1,121 @@
-﻿
-public interface IButton
+﻿public class Burger
 {
-    void Render();
-}
+    public string Bread;
+    public string Meat;
+    public string Cheese;
+    public string Sauce;
 
-public interface ITextBox
-{
-    void Render();
-}
-
-class LightButton : IButton
-{
-    public void Render() => Console.WriteLine("Light Button");
-}
-
-class DarkButton : IButton
-{
-    public void Render() => Console.WriteLine("Dark Button");
-}
-
-class LightTextBox : ITextBox
-{
-    public void Render() => Console.WriteLine("Light TextBox");
-}
-
-class DarkTextBox : ITextBox
-{
-    public void Render() => Console.WriteLine("Dark TextBox");
-}
-
-public interface UIFactory
-{
-    IButton createButton();
-    ITextBox createTextBox();
-}
-
-class LigthFactory : UIFactory
-{
-    public IButton createButton()
+    public void Show()
     {
-        return new LightButton();
-    }
-    public ITextBox createTextBox()
-    {
-        return new LightTextBox();
-    }
-}
-
-class DarkFactory : UIFactory
-{
-    public IButton createButton()
-    {
-        return new DarkButton();
-    }
-    public ITextBox createTextBox()
-    {
-        return new DarkTextBox();
-    }
-}
-
-class Services
-{
-    private UIFactory factory;
-    public Services(UIFactory factory)
-    {
-        this.factory = factory;
+        Console.WriteLine("🍔 Burger Details:");
+        Console.WriteLine($"Bread  : {Bread}");
+        Console.WriteLine($"Meat   : {Meat}");
+        Console.WriteLine($"Cheese : {Cheese}");
+        Console.WriteLine($"Sauce  : {Sauce}");
+        Console.WriteLine("------------------------");
     }
 
-    public void drawUi()
+}
+
+public class BurgerInput
+{
+    public string Bread;
+    public string Meat;
+    public string Cheese;
+    public string Sauce;
+}
+
+
+
+public interface IBurgerBuilder
+{
+    IBurgerBuilder SetBread(string bread);
+    IBurgerBuilder SetMeat(string meat);
+    IBurgerBuilder SetCheese(string cheese);
+    IBurgerBuilder SetSauce(string sauce);
+    Burger Build();
+}
+
+public class BurgerBuilder : IBurgerBuilder
+{
+    private Burger burger = new Burger();
+
+    public IBurgerBuilder SetBread(string bread)
     {
-        IButton button = factory.createButton();
-        ITextBox box = factory.createTextBox();
-        button.Render();
-        box.Render();
+        burger.Bread = bread;
+        return this;
+    }
+
+    public IBurgerBuilder SetMeat(string meat)
+    {
+        burger.Meat = meat;
+        return this;
+    }
+
+    public IBurgerBuilder SetCheese(string cheese)
+    {
+        burger.Cheese = cheese;
+        return this;
+    }
+
+    public IBurgerBuilder SetSauce(string sauce)
+    {
+        burger.Sauce = sauce;
+        return this;
+    }
+
+    public Burger Build()
+    {
+        return burger;
     }
 }
 
-class Program()
+public class BurgerServices
+{
+    private IBurgerBuilder services;
+    public BurgerServices(IBurgerBuilder services)
+    {
+        this.services = services;
+    }
+
+    public Burger CreateBurger(BurgerInput input)
+    {
+         return services
+         .SetBread(input.Bread)
+         .SetCheese(input.Cheese)
+         .SetMeat(input.Meat)
+         .SetSauce(input.Sauce)
+         .Build();        
+    }
+
+}
+
+class Prgram
 {
     static void Main(string[] args)
     {
-        UIFactory factory = new LigthFactory();
-        Services services = new Services(factory);
-        services.drawUi();
+        BurgerInput normalBurger = new BurgerInput
+        {
+           Bread = "bread",
+           Meat = "meat",
+           Sauce = "sauce",
+           Cheese = "cheese"  
+        };
 
-        factory = new DarkFactory();
-        services = new Services(factory);
-        services.drawUi();
+        IBurgerBuilder burger = new BurgerBuilder();
+        BurgerServices services = new BurgerServices(burger);
+        var show = services.CreateBurger(normalBurger);
+        show.Show();
+
+        normalBurger = new BurgerInput
+        {
+           Sauce = "sauces",
+           Bread = "Special bread",
+           Meat = "meats",
+           Cheese = "cheeses"  
+        };
+        show = services.CreateBurger(normalBurger);
+        show.Show();
+
     }
 }

@@ -42,6 +42,120 @@ step-by-step build করো (AddCheese(), AddSauce())
 👉 Different burger variation easily create করা যাবে (Veg, Chicken, etc.)
 
 
+using System;
+
+public class Burger
+{
+    public string Bread { get; set; }
+    public string Meat { get; set; }
+    public string Cheese { get; set; }
+    public string Sauce { get; set; }
+
+    public void Show()
+    {
+        Console.WriteLine("🍔 Burger Details:");
+        Console.WriteLine($"Bread  : {Bread}");
+        Console.WriteLine($"Meat   : {Meat}");
+        Console.WriteLine($"Cheese : {Cheese}");
+        Console.WriteLine($"Sauce  : {Sauce}");
+        Console.WriteLine("------------------------");
+    }
+}
+
+public class BurgerRequestDto
+{
+    public string Bread { get; set; }
+    public string Meat { get; set; }
+    public string Cheese { get; set; }
+    public string Sauce { get; set; }
+}
+
+public interface IBurgerBuilder
+{
+    IBurgerBuilder SetBread(string bread);
+    IBurgerBuilder SetMeat(string meat);
+    IBurgerBuilder SetCheese(string cheese);
+    IBurgerBuilder SetSauce(string sauce);
+    Burger Build();
+}
+
+public class BurgerBuilder : IBurgerBuilder
+{
+    private Burger burger = new Burger();
+
+    public IBurgerBuilder SetBread(string bread)
+    {
+        burger.Bread = bread;
+        return this;
+    }
+
+    public IBurgerBuilder SetMeat(string meat)
+    {
+        burger.Meat = meat;
+        return this;
+    }
+
+    public IBurgerBuilder SetCheese(string cheese)
+    {
+        burger.Cheese = cheese;
+        return this;
+    }
+
+    public IBurgerBuilder SetSauce(string sauce)
+    {
+        burger.Sauce = sauce;
+        return this;
+    }
+
+    public Burger Build()
+    {
+        return burger;
+    }
+}
+
+public class BurgerService
+{
+    private readonly IBurgerBuilder _builder;
+
+    public BurgerService(IBurgerBuilder builder)
+    {
+        _builder = builder;
+    }
+
+    public Burger CreateBurger(BurgerRequestDto dto)
+    {
+        return _builder
+            .SetBread(dto.Bread)
+            .SetMeat(dto.Meat)
+            .SetCheese(dto.Cheese)
+            .SetSauce(dto.Sauce)
+            .Build();
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        IBurgerBuilder builder = new BurgerBuilder();
+        BurgerService service = new BurgerService(builder);
+
+        var dto = new BurgerRequestDto
+        {
+            Bread = "Big Bun",
+            Meat = "Chicken",
+            Cheese = "Cheddar",
+            Sauce = "Mayo"
+        };
+
+        var burger = service.CreateBurger(dto);
+
+        burger.Show();
+    }
+}
+
+
+
 🟡 Problem 8: Builder
 
 📌 Problem Name: "Report Generator Hell"
