@@ -1,67 +1,90 @@
-﻿class Paypal
+﻿
+public interface ICoffee
 {
-    public void PayWithPaypal(int amount)
-    {
-        Console.WriteLine($"Paid using PayPal {amount}");
-    }
-}
-
-class Stripe
-{
-    public void MakePayment(int amount)
-    {
-        Console.WriteLine($"Paid using Stripe {amount}");
-    }
-}
-
-public interface Ipayment
-{
-    public void Pay(int amount);
-}
-
-class PaypalAdapter : Ipayment
-{
-    private Paypal pay = new Paypal();
-    public void Pay(int amount)
-    {
-        pay.PayWithPaypal(amount);
-    }
-}
-
-class StripeAdapter : Ipayment
-{
-    private Stripe pay = new Stripe();
-    public void Pay(int amount)
-    {
-        pay.MakePayment(amount);
-    }
+    string GetDescription();
+    int GetCost();
 }
 
 
-class PaymentService
+public class BasicCoffee : ICoffee
 {
-    private Ipayment services;
-    public PaymentService(Ipayment services)
+    public string GetDescription()
     {
-        this.services = services;
+        return "Basic coffee";
     }
-    public void Pay(int amount)
+    public int GetCost()
     {
-        services.Pay(amount);
+        return 100;
     }
 }
+
+public abstract class CoffeeDecorator : ICoffee
+{
+    public ICoffee coffee;
+    public CoffeeDecorator(ICoffee coffee)
+    {
+        this.coffee = coffee;
+    }
+
+    public virtual string GetDescription()
+    {
+        return coffee.GetDescription();
+    }
+    public virtual int GetCost()
+    {
+        return coffee.GetCost();
+    }
+}
+
+public class MilkDecorator: CoffeeDecorator
+{
+    public MilkDecorator(ICoffee coffee) : base(coffee){}
+    public override string GetDescription()
+    {
+       return coffee.GetDescription() + "Milk";
+    }
+
+    public override int GetCost()
+    {
+        return coffee.GetCost() + 20;
+    }    
+}
+
+public class ChocolateDecrorator: CoffeeDecorator
+{
+    public ChocolateDecrorator(ICoffee coffee):base(coffee){}
+    public override string GetDescription()
+    {
+       return coffee.GetDescription() + "Chocolate";
+    }
+
+    public override int GetCost()
+    {
+        return coffee.GetCost() + 20;
+    }    
+}
+
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        Ipayment paypal = new PaypalAdapter();
-        Ipayment stripe = new StripeAdapter();
+        ICoffee coffee = new BasicCoffee();
 
-        PaymentService services = new PaymentService(paypal);
-        services.Pay(100);
-        services = new PaymentService(stripe);
-        services.Pay(200);
+        Console.WriteLine(coffee.GetDescription());
+        Console.WriteLine(coffee.GetCost());
+        Console.WriteLine("............");
 
+        coffee = new MilkDecorator(coffee);
+
+        Console.WriteLine(coffee.GetDescription());
+        Console.WriteLine(coffee.GetCost());
+        Console.WriteLine("............");
+
+        coffee = new ChocolateDecrorator(coffee);
+        Console.WriteLine(coffee.GetDescription());
+        Console.WriteLine(coffee.GetCost());
+        Console.WriteLine("............");
     }
 }
+
