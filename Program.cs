@@ -1,90 +1,51 @@
-﻿
-public interface ICoffee
+﻿using System;
+
+public interface IDatabase
 {
-    string GetDescription();
-    int GetCost();
+    void FetchData(string userRole);
 }
 
-
-public class BasicCoffee : ICoffee
+class Database : IDatabase
 {
-    public string GetDescription()
+    public void FetchData(string userRole)
     {
-        return "Basic coffee";
-    }
-    public int GetCost()
-    {
-        return 100;
+        Console.WriteLine("Fetching sensitive data...");
     }
 }
 
-public abstract class CoffeeDecorator : ICoffee
+class DatabaseProxy : IDatabase
 {
-    public ICoffee coffee;
-    public CoffeeDecorator(ICoffee coffee)
-    {
-        this.coffee = coffee;
-    }
+    private IDatabase database = new Database();
 
-    public virtual string GetDescription()
+    public void FetchData(string userRole)
     {
-        return coffee.GetDescription();
-    }
-    public virtual int GetCost()
-    {
-        return coffee.GetCost();
+        if (userRole == "admin")
+        {
+            database.FetchData(userRole);
+        }
+        else
+        {
+            Console.WriteLine("Access denied ❌ Only Admin can access the database!");
+        }
     }
 }
 
-public class MilkDecorator: CoffeeDecorator
+public class Client
 {
-    public MilkDecorator(ICoffee coffee) : base(coffee){}
-    public override string GetDescription()
+    public void GetData(string userRole)
     {
-       return coffee.GetDescription() + "Milk";
+        IDatabase db = new DatabaseProxy();
+        db.FetchData(userRole);
     }
-
-    public override int GetCost()
-    {
-        return coffee.GetCost() + 20;
-    }    
 }
-
-public class ChocolateDecrorator: CoffeeDecorator
-{
-    public ChocolateDecrorator(ICoffee coffee):base(coffee){}
-    public override string GetDescription()
-    {
-       return coffee.GetDescription() + "Chocolate";
-    }
-
-    public override int GetCost()
-    {
-        return coffee.GetCost() + 20;
-    }    
-}
-
 
 class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
-        ICoffee coffee = new BasicCoffee();
+        Client c = new Client();
 
-        Console.WriteLine(coffee.GetDescription());
-        Console.WriteLine(coffee.GetCost());
-        Console.WriteLine("............");
-
-        coffee = new MilkDecorator(coffee);
-
-        Console.WriteLine(coffee.GetDescription());
-        Console.WriteLine(coffee.GetCost());
-        Console.WriteLine("............");
-
-        coffee = new ChocolateDecrorator(coffee);
-        Console.WriteLine(coffee.GetDescription());
-        Console.WriteLine(coffee.GetCost());
-        Console.WriteLine("............");
+        c.GetData("admin");
+        c.GetData("users");
     }
 }
-
