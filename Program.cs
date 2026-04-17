@@ -1,82 +1,56 @@
-﻿
-
-class SharedCharacter
+﻿interface IFileSystem
 {
-    public string Font;
-    public int Size;
+    void Show();
+}
 
-    public SharedCharacter(string Font, int Size)
+class File : IFileSystem
+{
+    public void Show()
     {
-        this.Font = Font;
-        this.Size = Size;
+        Console.WriteLine("Showing file.....");
     }
 }
 
-class CharacterFactory
+class Folder : IFileSystem
 {
-    private static Dictionary<string, SharedCharacter> character = new Dictionary<string, SharedCharacter>();
 
-    public static SharedCharacter GetCharacter(string Font, int size)
+    private List<IFileSystem> file = new List<IFileSystem>();
+
+    public void Add(IFileSystem file)
     {
-        string key = Font + " " + size;
-        if (!character.ContainsKey(key))
+        this.file.Add(file);
+    }
+
+    public void Show()
+    {
+        Console.WriteLine("Showing folder.....");
+
+        foreach (IFileSystem item in file)
         {
-            character[key] = new SharedCharacter(Font, size);
+            item.Show();
         }
-        return character[key];
+
     }
 }
 
-class Character
-{
-    public char Value;
-    public SharedCharacter character;
-    public int X;
-    public int Y;
 
-    public Character(char value, SharedCharacter character, int x, int y)
-    {
-        Value = value;
-        this.character = character;
-        X = x;
-        Y = y;
-    }
-
-    public void Display()
-    {
-        Console.WriteLine($"{Value} [{character.Font} {character.Size}] at ({X},{Y})");
-    }
-}
-
-class TextEditor
-{
-    private List<Character>alphabhet = new List<Character>();
-    public void CreateText()
-    {
-        string word = "Hellow";
-        SharedCharacter sharedFont = CharacterFactory.GetCharacter("Arial",10);
-        for(int i = 0; i < word.Length; i++)
-        {
-            Character character = new Character(word[i], sharedFont, i, i);
-            alphabhet.Add(character);
-        }
-    }
-
-    public void Display()
-    {
-        foreach(var item in alphabhet)
-        {
-            item.Display();
-        }
-    }
-}
 
 class Program
 {
     static void Main(string[] args)
     {
-        TextEditor editor = new TextEditor();
-        editor.CreateText();
-        editor.Display();
+
+        File file = new File();
+        Folder folder = new Folder();
+
+        Folder folder1 = new Folder();
+
+        folder1.Add(file);
+
+        folder.Add(folder1);
+        folder.Add(file);
+    
+        folder.Show();
+
     }
 }
