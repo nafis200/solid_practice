@@ -1,41 +1,73 @@
-﻿using System;
+﻿
 
-public interface IDatabase
+class SharedCharacter
 {
-    void FetchData(string userRole);
-}
+    public string Font;
+    public int Size;
 
-class Database : IDatabase
-{
-    public void FetchData(string userRole)
+    public SharedCharacter(string Font, int Size)
     {
-        Console.WriteLine("Fetching sensitive data...");
+        this.Font = Font;
+        this.Size = Size;
     }
 }
 
-class DatabaseProxy : IDatabase
+class CharacterFactory
 {
-    private IDatabase database = new Database();
+    private static Dictionary<string, SharedCharacter> character = new Dictionary<string, SharedCharacter>();
 
-    public void FetchData(string userRole)
+    public static SharedCharacter GetCharacter(string Font, int size)
     {
-        if (userRole == "admin")
+        string key = Font + " " + size;
+        if (!character.ContainsKey(key))
         {
-            database.FetchData(userRole);
+            character[key] = new SharedCharacter(Font, size);
         }
-        else
-        {
-            Console.WriteLine("Access denied ❌ Only Admin can access the database!");
-        }
+        return character[key];
     }
 }
 
-public class Client
+class Character
 {
-    public void GetData(string userRole)
+    public char Value;
+    public SharedCharacter character;
+    public int X;
+    public int Y;
+
+    public Character(char value, SharedCharacter character, int x, int y)
     {
-        IDatabase db = new DatabaseProxy();
-        db.FetchData(userRole);
+        Value = value;
+        this.character = character;
+        X = x;
+        Y = y;
+    }
+
+    public void Display()
+    {
+        Console.WriteLine($"{Value} [{character.Font} {character.Size}] at ({X},{Y})");
+    }
+}
+
+class TextEditor
+{
+    private List<Character>alphabhet = new List<Character>();
+    public void CreateText()
+    {
+        string word = "Hellow";
+        SharedCharacter sharedFont = CharacterFactory.GetCharacter("Arial",10);
+        for(int i = 0; i < word.Length; i++)
+        {
+            Character character = new Character(word[i], sharedFont, i, i);
+            alphabhet.Add(character);
+        }
+    }
+
+    public void Display()
+    {
+        foreach(var item in alphabhet)
+        {
+            item.Display();
+        }
     }
 }
 
@@ -43,9 +75,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        Client c = new Client();
-
-        c.GetData("admin");
-        c.GetData("users");
+        TextEditor editor = new TextEditor();
+        editor.CreateText();
+        editor.Display();
     }
 }
