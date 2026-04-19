@@ -43,6 +43,139 @@ Invoker (RemoteControl)
 
 using System;
 
+public interface ICommand
+{
+    void Execute();
+}
+
+class TV
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("TV is ON");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("TV is OFF");
+    }
+}
+
+class Radio
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("Radio is ON");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("Radio is OFF");
+    }
+}
+
+class TVOnCommand : ICommand
+{
+    private TV tv;
+
+    public TVOnCommand(TV tv)
+    {
+        this.tv = tv;
+    }
+
+    public void Execute()
+    {
+        tv.TurnOn();
+    }
+}
+
+class TVOffCommand : ICommand
+{
+    private TV tv;
+
+    public TVOffCommand(TV tv)
+    {
+        this.tv = tv;
+    }
+
+    public void Execute()
+    {
+        tv.TurnOff();
+    }
+}
+
+class RadioOnCommand : ICommand
+{
+    private Radio radio;
+
+    public RadioOnCommand(Radio radio)
+    {
+        this.radio = radio;
+    }
+
+    public void Execute()
+    {
+        radio.TurnOn();
+    }
+}
+
+class RadioOffCommand : ICommand
+{
+    private Radio radio;
+
+    public RadioOffCommand(Radio radio)
+    {
+        this.radio = radio;
+    }
+
+    public void Execute()
+    {
+        radio.TurnOff();
+    }
+}
+
+class RemoteControl
+{
+    private ICommand command;
+
+    public void SetCommand(ICommand command)
+    {
+        this.command = command;
+    }
+
+    public void PressButton()
+    {
+        command.Execute();
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        RemoteControl remote = new RemoteControl();
+
+        TV tv = new TV();
+        Radio radio = new Radio();
+
+        remote.SetCommand(new TVOnCommand(tv));
+        remote.PressButton();
+
+        remote.SetCommand(new TVOffCommand(tv));
+        remote.PressButton();
+
+        remote.SetCommand(new RadioOnCommand(radio));
+        remote.PressButton();
+
+        remote.SetCommand(new RadioOffCommand(radio));
+        remote.PressButton();
+    }
+}
+
+
+
+using System;
+
 class RemoteControl
 {
     private TV tv = new TV();
