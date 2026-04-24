@@ -34,105 +34,106 @@ Concrete Collection
 👉 multiple traversal strategy support করতে হবে (forward + reverse)
 
 
-interface IIterator<T>
+public interface Iiterator<T>
 {
-    bool hasNext();
+    bool HasNext();
     T Next();
 }
 
-interface IAggregate<T>
+public interface Iaggregate<T>
 {
-    IIterator<T> CreateIterator(bool reverse = false);
+    Iiterator<T> CreateIterator(bool reverse = false);
 }
 
-class BookCollection : IAggregate<string>
+
+public class BookCollection : Iaggregate<string>
 {
     private List<string> books = new List<string>();
 
     public void Add(string book)
     {
-        this.books.Add(book);
+        books.Add(book);
     }
 
-    internal List<string> Items
+    internal int Count
     {
-        get{
-            return books;
+        get
+        {
+            return books.Count;
         }
     }
-
-    public IIterator<string> CreateIterator(bool reverse = false)
+    internal string Get(int index)
     {
-        return reverse 
-        ? new BackwardIterator(this)
-        : new ForwardIterator(this);
+        return books[index];
+    } 
+   public Iiterator<string> CreateIterator(bool reverse = false)
+    {
+        return reverse == false ? new Forward(this) : new Backward(this);
     }
-
 }
 
-
-class ForwardIterator : IIterator<string>
+class Forward : Iiterator<string>
 {
     private BookCollection collection;
     private int index = 0;
-    public ForwardIterator(BookCollection collection)
+
+    public Forward(BookCollection collection)
     {
         this.collection = collection;
     }
-
-    public bool hasNext()
+    public bool HasNext()
     {
-        return index < collection.Items.Count;
+        return index < collection.Count;
     }
     public string Next()
     {
-        return collection.Items[index++];
+        return collection.Get(index++);
     }
 }
 
 
-class BackwardIterator : IIterator<string>
+class Backward : Iiterator<string>
 {
     private BookCollection collection;
     private int index;
-    public BackwardIterator(BookCollection collection)
+
+    public Backward(BookCollection collection)
     {
         this.collection = collection;
-        index = collection.Items.Count - 1;
+        index = collection.Count - 1;
     }
-
-    public bool hasNext()
+    public bool HasNext()
     {
         return index >= 0;
     }
     public string Next()
     {
-        return collection.Items[index--];
+        return collection.Get(index--);
     }
 }
 
-
 class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
-        var books = new BookCollection();
+        var collection = new BookCollection();
+        collection.Add("c++");
+        collection.Add("C#");
+        collection.Add("python");
 
-        books.Add("C#");
-        books.Add("Java");
-        books.Add("Python");
-
-        Console.WriteLine("Forward Traversal:");
-        var forward = books.CreateIterator();
-        while (forward.hasNext())
+        var forward = collection.CreateIterator();
+        while (forward.HasNext())
         {
             Console.WriteLine(forward.Next());
-        }
+        }    
 
-        forward = books.CreateIterator(true);
-        while (forward.hasNext())
+        Console.WriteLine("Backword.........");
+
+        forward = collection.CreateIterator(true);
+        while (forward.HasNext())
         {
             Console.WriteLine(forward.Next());
-        }
+        }    
+        
     }
 }
