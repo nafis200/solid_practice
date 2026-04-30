@@ -1,72 +1,78 @@
-﻿
-
-public interface IChatMeditor
+﻿class EditorState
 {
-    public void SendMessage(string message, User user);
-    public void AddUser(User user);
-}
+    private readonly string text;
 
-public class ChatMeditor : IChatMeditor
-{
-    public List<User> users = new List<User>();
-
-
-    public void AddUser(User user)
+    public EditorState(string text)
     {
-        users.Add(user);
+        this.text = text;
     }
 
-    public void SendMessage(string message, User user)
+    public string GetText()
     {
-        foreach (var x in users)
-        {
-            if (x != user)
-            {
-                x.ReceiveMessage(user.Name, message);
-            }
-        }
+        return text;
     }
 }
 
-
-public class User
+class TextEditor
 {
-    public IChatMeditor mediator;
-    public string Name;
-
-    public User(string Name, IChatMeditor mediator)
+    private string text = "";
+    public void Write(string newText)
     {
-        this.Name = Name;
-        this.mediator = mediator;
-    }
-    public void Send(string message)
-    {
-        Console.WriteLine($"{Name} sends: {message}");
-        mediator.SendMessage(message, this);
+        text += newText;
     }
 
-    public void ReceiveMessage(string senderName, string message)
+    public string GetText()
     {
-        Console.WriteLine($"{Name} received from {senderName}: {message}");
+        return text;
+    }
+    public EditorState Save()
+    {
+        return new EditorState(text);
+    }
+
+    public void Restore(EditorState state)
+    {
+        text = state.GetText();
+    }
+
+}
+
+class History
+{
+    private Stack<EditorState> states = new Stack<EditorState>();
+
+    public void Push(EditorState state)
+    {
+        states.Push(state);
+    }
+
+    public EditorState Pop()
+    {
+        return states.Pop();
     }
 }
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        IChatMeditor mediator = new ChatMeditor();
-        User user1 = new User("Alice", mediator);
-        User user2 = new User("Bob", mediator);
-        User user3 = new User("Charlie", mediator);
+        var editor = new TextEditor();
+        var history = new History();
 
-        mediator.AddUser(user1);
-        mediator.AddUser(user2);
-        mediator.AddUser(user3);
+        editor.Write("Hello");
+        history.Push(editor.Save());
 
-        user1.Send("Hello everyone!");
-        user2.Send("Hi Alice!");
-        user3.Send("Hey guys!");
+        editor.Write(" World");
+        history.Push(editor.Save());
 
+        editor.Write("!!!");
+
+        Console.WriteLine(editor.GetText());
+
+        editor.Restore(history.Pop());
+        Console.WriteLine(editor.GetText());
+
+        editor.Restore(history.Pop());
+        Console.WriteLine(editor.GetText());
     }
 }
