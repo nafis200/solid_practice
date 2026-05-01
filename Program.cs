@@ -1,78 +1,109 @@
-﻿class EditorState
+﻿interface IATMState
 {
-    private readonly string text;
+    void InsertCard(ATM atm);
+    void EnterPin(ATM atm);
+    void WithDrawMoney(ATM atm);
+}
 
-    public EditorState(string text)
+class NoCardState : IATMState
+{
+    public void InsertCard(ATM atm)
     {
-        this.text = text;
+        Console.WriteLine("Card Inserted");
+        atm.SetState(new HasCardState());
+
+
     }
 
-    public string GetText()
+    public void EnterPin(ATM atm)
     {
-        return text;
+        Console.WriteLine("Insert card first");
+    }
+
+    public void WithDrawMoney(ATM atm)
+    {
+        Console.WriteLine("Insert card first");
     }
 }
 
-class TextEditor
+class HasCardState : IATMState
 {
-    private string text = "";
-    public void Write(string newText)
+    public void InsertCard(ATM atm)
     {
-        text += newText;
+        Console.WriteLine("Already has card");
     }
 
-    public string GetText()
+    public void EnterPin(ATM atm)
     {
-        return text;
-    }
-    public EditorState Save()
-    {
-        return new EditorState(text);
+        Console.WriteLine("PIN Verified");
+        atm.SetState(new PinVerifiedState());
+
+
     }
 
-    public void Restore(EditorState state)
+    public void WithDrawMoney(ATM atm)
     {
-        text = state.GetText();
+        Console.WriteLine("Enter PIN first");
     }
-
 }
 
-class History
+class PinVerifiedState : IATMState
 {
-    private Stack<EditorState> states = new Stack<EditorState>();
-
-    public void Push(EditorState state)
+    public void InsertCard(ATM atm)
     {
-        states.Push(state);
+        Console.WriteLine("Already has card");
     }
 
-    public EditorState Pop()
+    public void EnterPin(ATM atm)
     {
-        return states.Pop();
+        Console.WriteLine("PIN already verified");
     }
+
+    public void WithDrawMoney(ATM atm)
+    {
+        Console.WriteLine("Money Withdrawn");
+    }
+}
+
+class ATM
+{
+    private IATMState state;
+    public ATM()
+    {
+        state = new NoCardState();
+    }
+
+    public void SetState(IATMState newstate)
+    {
+        state = newstate;
+    }
+
+    public void InsertCard()
+    {
+        state.InsertCard(this);
+    }
+
+    public void EnterPin()
+    {
+        state.EnterPin(this);
+    }
+    public void WithdrawMoney()
+    {
+        state.WithDrawMoney(this);
+    }
+
 }
 
 class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
-        var editor = new TextEditor();
-        var history = new History();
+        ATM atm = new ATM();
 
-        editor.Write("Hello");
-        history.Push(editor.Save());
-
-        editor.Write(" World");
-        history.Push(editor.Save());
-
-        editor.Write("!!!");
-
-        Console.WriteLine(editor.GetText());
-
-        editor.Restore(history.Pop());
-        Console.WriteLine(editor.GetText());
-
-        editor.Restore(history.Pop());
-        Console.WriteLine(editor.GetText());
+        atm.WithdrawMoney();
+        atm.InsertCard();
+        atm.WithdrawMoney();
+        atm.EnterPin();
+        atm.WithdrawMoney();
     }
 }
