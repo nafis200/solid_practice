@@ -1,109 +1,50 @@
-﻿interface IATMState
+﻿public interface Ipayment
 {
-    void InsertCard(ATM atm);
-    void EnterPin(ATM atm);
-    void WithDrawMoney(ATM atm);
+    public void pay();
 }
 
-class NoCardState : IATMState
+public class Bikash : Ipayment{
+     
+    public void pay()
+    {
+       Console.WriteLine("Bikash Payment....");  
+    }
+
+}
+
+public class Nagad : Ipayment
 {
-    public void InsertCard(ATM atm)
+     public void pay()
     {
-        Console.WriteLine("Card Inserted");
-        atm.SetState(new HasCardState());
-
-
-    }
-
-    public void EnterPin(ATM atm)
-    {
-        Console.WriteLine("Insert card first");
-    }
-
-    public void WithDrawMoney(ATM atm)
-    {
-        Console.WriteLine("Insert card first");
+       Console.WriteLine("Nagad Payment....");  
     }
 }
 
-class HasCardState : IATMState
+public class PaymentServices
 {
-    public void InsertCard(ATM atm)
+    private Ipayment payment;
+    public PaymentServices(Ipayment payment)
     {
-        Console.WriteLine("Already has card");
+        this.payment = payment;
     }
-
-    public void EnterPin(ATM atm)
+    public void paymentMethod()
     {
-        Console.WriteLine("PIN Verified");
-        atm.SetState(new PinVerifiedState());
-
-
+        payment.pay();
     }
-
-    public void WithDrawMoney(ATM atm)
-    {
-        Console.WriteLine("Enter PIN first");
-    }
-}
-
-class PinVerifiedState : IATMState
-{
-    public void InsertCard(ATM atm)
-    {
-        Console.WriteLine("Already has card");
-    }
-
-    public void EnterPin(ATM atm)
-    {
-        Console.WriteLine("PIN already verified");
-    }
-
-    public void WithDrawMoney(ATM atm)
-    {
-        Console.WriteLine("Money Withdrawn");
-    }
-}
-
-class ATM
-{
-    private IATMState state;
-    public ATM()
-    {
-        state = new NoCardState();
-    }
-
-    public void SetState(IATMState newstate)
-    {
-        state = newstate;
-    }
-
-    public void InsertCard()
-    {
-        state.InsertCard(this);
-    }
-
-    public void EnterPin()
-    {
-        state.EnterPin(this);
-    }
-    public void WithdrawMoney()
-    {
-        state.WithDrawMoney(this);
-    }
-
 }
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        ATM atm = new ATM();
+        Ipayment bikash = new Bikash();
+         
+        Ipayment nagad = new Nagad();
 
-        atm.WithdrawMoney();
-        atm.InsertCard();
-        atm.WithdrawMoney();
-        atm.EnterPin();
-        atm.WithdrawMoney();
+        PaymentServices method = new PaymentServices(bikash);
+
+        method.paymentMethod();
+
+        
     }
 }
