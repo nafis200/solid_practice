@@ -1,35 +1,47 @@
-﻿public interface Ipayment
+﻿interface IShape
 {
-    public void pay();
+    void Accept(IShapeVisitor visitor);
 }
 
-public class Bikash : Ipayment{
-     
-    public void pay()
-    {
-       Console.WriteLine("Bikash Payment....");  
-    }
-
-}
-
-public class Nagad : Ipayment
+class Circle : IShape
 {
-     public void pay()
+    public double Radius;
+
+    public void Accept(IShapeVisitor visitor)
     {
-       Console.WriteLine("Nagad Payment....");  
+        visitor.Visit(this);
     }
 }
 
-public class PaymentServices
+class Rectangle : IShape
 {
-    private Ipayment payment;
-    public PaymentServices(Ipayment payment)
+    public double Width;
+    public double Height;
+
+    public void Accept(IShapeVisitor visitor)
     {
-        this.payment = payment;
+        visitor.Visit(this);
     }
-    public void paymentMethod()
+}
+
+interface IShapeVisitor
+{
+    void Visit(Circle circle);
+    void Visit(Rectangle rectangle);
+}
+
+class AreaCalculatorVisitor : IShapeVisitor
+{
+    public double Area;
+
+    public void Visit(Circle c)
     {
-        payment.pay();
+        Area = 3.14 * c.Radius * c.Radius;
+    }
+
+    public void Visit(Rectangle r)
+    {
+        Area = r.Width * r.Height;
     }
 }
 
@@ -37,14 +49,19 @@ class Program
 {
     static void Main()
     {
-        Ipayment bikash = new Bikash();
-         
-        Ipayment nagad = new Nagad();
+        IShape[] shapes = new IShape[]
+        {
+            new Circle { Radius = 5 },
+            new Rectangle { Width = 4, Height = 6 }
+        };
 
-        PaymentServices method = new PaymentServices(bikash);
+        foreach (IShape shape in shapes)
+        {
+            AreaCalculatorVisitor visitor = new AreaCalculatorVisitor();
 
-        method.paymentMethod();
+            shape.Accept(visitor);
 
-        
+            Console.WriteLine(visitor.Area);
+        }
     }
 }
