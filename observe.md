@@ -1,68 +1,86 @@
-🔵 Problem 3: Observer Pattern Violation
+Problem 3: Observer Pattern Violation (YouTube Notification System)
 
-📌 Problem Name: "Weather Station Without Observer"
-
+📌 Problem Name: "YouTube Channel Without Observer"
 📝 Problem Statement:
 
-class WeatherStation {
-    public void SetTemperature(float temp) {
-        Console.WriteLine($"Temperature updated: {temp}");
+class YouTubeChannel {
+    public void UploadVideo(string title) {
+        Console.WriteLine($"New video uploaded: {title}");
 
-        Display1 d1 = new Display1();
-        d1.Update(temp);
+        Subscriber1 s1 = new Subscriber1();
+        s1.Notify(title);
 
-        Display2 d2 = new Display2();
-        d2.Update(temp);
+        Subscriber2 s2 = new Subscriber2();
+        s2.Notify(title);
     }
 }
 
-class Display1 {
-    public void Update(float temp) {
-        Console.WriteLine($"Display1 shows: {temp}");
+class Subscriber1 {
+    public void Notify(string title) {
+        Console.WriteLine($"Subscriber1 got notification: {title}");
     }
 }
 
-class Display2 {
-    public void Update(float temp) {
-        Console.WriteLine($"Display2 shows: {temp}");
+class Subscriber2 {
+    public void Notify(string title) {
+        Console.WriteLine($"Subscriber2 got notification: {title}");
     }
 }
 
 class Client {
     public void Run() {
-        WeatherStation station = new WeatherStation();
-        station.SetTemperature(30);
+        YouTubeChannel channel = new YouTubeChannel();
+        channel.UploadVideo("Observer Pattern in C#");
     }
 }
+❌ Task (Violation Analysis)
 
-❌ Task (Violation):
+👉 Explain:
 
-👉 Explain করো:
+❌ Why this is bad design?
 
-কেন এটা bad design?
+➡️ YouTubeChannel directly creates Subscriber objects
+➡️ Tight coupling between Channel and Subscribers
+➡️ Cannot add new subscriber types without modifying YouTubeChannel
+➡️ Violates Open/Closed Principle (OCP)
 
-➡️ WeatherStation directly display create করছে ❌
-➡️ Tight coupling ❌
-➡️ New display add করতে code change করতে হবে ❌
-➡️ Open/Closed Principle violate করছে ❌
+❌ Problem Breakdown
 
-👉 Problem কী?
+👉 What is wrong?
 
-➡️ Observer dynamically add/remove করা যায় না ❌
-➡️ System flexible না ❌
-➡️ Reusability কম ❌
+❌ No dynamic subscription system
+❌ No unsubscribe feature
+❌ Not reusable architecture
+❌ Hard to scale (Netflix/YouTube level impossible)
+❌ Subject depends on concrete classes
+🎯 Your Task (IMPORTANT)
+✅ Fix this using Observer Pattern
 
-✅ Task (Fix using Observer Pattern):
+👉 Refactor the system:
 
-👉 Refactor করো:
+You MUST implement:
 
-➡️ Create IObserver interface
-➡️ Create ISubject interface
-➡️ WeatherStation হবে Subject
-➡️ Displays হবে Observer
+➡️ IObserver interface
+➡️ ISubject interface
 
-🎯 Constraint:
+📌 Requirements:
+🔹 Subject = YouTubeChannel
 
-👉 Observer dynamically subscribe/unsubscribe করতে পারবে
-👉 Subject notify করবে observers কে
-👉 Loose coupling maintain করতে হবে
+Must support:
+
+Attach subscriber
+Detach subscriber
+Notify all subscribers
+🔹 Observer = Subscribers
+
+Each subscriber:
+
+Must implement Update() method
+Must receive video title dynamically
+🎯 Constraints:
+
+✔️ Subscribers must be dynamically added
+✔️ Subscribers must be dynamically removed
+✔️ YouTubeChannel must NOT know concrete subscriber classes
+✔️ Must follow Loose Coupling
+✔️ Must follow Open/Closed Principle

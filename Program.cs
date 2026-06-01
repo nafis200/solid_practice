@@ -1,47 +1,83 @@
-﻿interface IShape
+﻿
+public interface IObserve
 {
-    void Accept(IShapeVisitor visitor);
+    void update(string title);
 }
 
-class Circle : IShape
+public interface ISubject
 {
-    public double Radius;
+    void Subscribe(IObserve observe);
+    void Unsubscribe(IObserve observe);
+    void Notify(string title);
+}
 
-    public void Accept(IShapeVisitor visitor)
+class YoutubeChannel : ISubject
+{
+    private List<IObserve> subscribers = new List<IObserve>();
+
+    public void Subscribe(IObserve observe)
     {
-        visitor.Visit(this);
+        subscribers.Add(observe);
+    }
+
+    public void Unsubscribe(IObserve observe)
+    {
+        subscribers.Remove(observe);
+    }
+
+    public void Notify(string title)
+    {
+        foreach (IObserve sub in subscribers)
+        {
+            sub.update(title);
+        }
+    }
+    public void UploadVideo(string title)
+    {
+        Console.WriteLine($"New video uploaded: {title}");
+        Notify(title);
+    }
+
+}
+
+class Subscribe1 : IObserve
+{
+    public void update(string title)
+    {
+        Console.WriteLine($"Subscriber1 got notification: {title}");
     }
 }
 
-class Rectangle : IShape
-{
-    public double Width;
-    public double Height;
 
-    public void Accept(IShapeVisitor visitor)
+class Subscribe2 : IObserve
+{
+    public void update(string title)
     {
-        visitor.Visit(this);
+        Console.WriteLine($"Subscriber2 got notification: {title}");
     }
 }
 
-interface IShapeVisitor
+class Client
 {
-    void Visit(Circle circle);
-    void Visit(Rectangle rectangle);
-}
-
-class AreaCalculatorVisitor : IShapeVisitor
-{
-    public double Area;
-
-    public void Visit(Circle c)
+    public void Run()
     {
-        Area = 3.14 * c.Radius * c.Radius;
-    }
+        YoutubeChannel channel = new YoutubeChannel();
 
-    public void Visit(Rectangle r)
-    {
-        Area = r.Width * r.Height;
+        IObserve subscribe = new Subscribe1();
+
+        IObserve subscribe1 = new Subscribe2();
+
+        channel.Subscribe(subscribe);
+        channel.Subscribe(subscribe1);
+
+        channel.UploadVideo("Observe Pattern In C#");
+
+        Console.WriteLine("\n--- After Unsubscribing Subscriber1 ---\n");
+     
+       channel.Unsubscribe(subscribe);
+
+       channel.UploadVideo("Second Video Upload");
+
     }
 }
 
@@ -49,19 +85,7 @@ class Program
 {
     static void Main()
     {
-        IShape[] shapes = new IShape[]
-        {
-            new Circle { Radius = 5 },
-            new Rectangle { Width = 4, Height = 6 }
-        };
-
-        foreach (IShape shape in shapes)
-        {
-            AreaCalculatorVisitor visitor = new AreaCalculatorVisitor();
-
-            shape.Accept(visitor);
-
-            Console.WriteLine(visitor.Area);
-        }
+        Client c = new Client();
+        c.Run();
     }
 }
