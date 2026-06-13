@@ -1,91 +1,88 @@
 ﻿
 public interface IObserve
 {
-    void update(string title);
+    void update(string message);
 }
 
 public interface ISubject
 {
-    void Subscribe(IObserve observe);
-    void Unsubscribe(IObserve observe);
-    void Notify(string title);
+    void Add(IObserve observe);
+
+    void Remove(IObserve observe);
+
+    void Notify(string message);
 }
 
-class YoutubeChannel : ISubject
+public class YoutubeChannel : ISubject
 {
-    private List<IObserve> subscribers = new List<IObserve>();
+    private List<IObserve>observes = new List<IObserve>();
 
-    public void Subscribe(IObserve observe)
+    public void Add(IObserve observe)
     {
-        subscribers.Add(observe);
+        observes.Add(observe);
     }
 
-    public void Unsubscribe(IObserve observe)
+   public void Remove(IObserve observe)
     {
-        subscribers.Remove(observe);
-    }
-
-    public void Notify(string title)
-    {
-        foreach (IObserve sub in subscribers)
+        if (observes.Contains(observe))
         {
-            sub.update(title);
+            observes.Remove(observe);
         }
     }
-    public void UploadVideo(string title)
-    {
-        Console.WriteLine($"New video uploaded: {title}");
-        Notify(title);
-    }
 
+    public void Notify(string message)
+    {
+        foreach(var observe in observes)
+        {
+            observe.update(message);
+        }
+    }
 }
 
-class Subscribe1 : IObserve
+public class Subscribe1: IObserve
 {
-    public void update(string title)
+    public void update(string message)
     {
-        Console.WriteLine($"Subscriber1 got notification: {title}");
+        Console.WriteLine($"Subscribe1 is get: {message}");
     }
 }
 
 
-class Subscribe2 : IObserve
+
+public class Subscribe2: IObserve
 {
-    public void update(string title)
+    public void update(string message)
     {
-        Console.WriteLine($"Subscriber2 got notification: {title}");
+        Console.WriteLine($"Subscribe2 is get: {message}");
     }
 }
 
-class Client
+public class Subscribe3: IObserve
 {
-    public void Run()
+    public void update(string message)
     {
-        YoutubeChannel channel = new YoutubeChannel();
-
-        IObserve subscribe = new Subscribe1();
-
-        IObserve subscribe1 = new Subscribe2();
-
-        channel.Subscribe(subscribe);
-        channel.Subscribe(subscribe1);
-
-        channel.UploadVideo("Observe Pattern In C#");
-
-        Console.WriteLine("\n--- After Unsubscribing Subscriber1 ---\n");
-     
-       channel.Unsubscribe(subscribe);
-
-       channel.UploadVideo("Second Video Upload");
-
+        Console.WriteLine($"Subscribe3 is get: {message}");
     }
 }
+
 
 class Program
 {
-    static void Main()
+     static void Main()
     {
-        Client c = new Client();
-        c.Run();
+        IObserve sub = new Subscribe1();
+        IObserve sub1 = new Subscribe2();
+        IObserve sub2 = new Subscribe3();
+
+
+        ISubject channel = new YoutubeChannel();
+
+        channel.Add(sub);
+        channel.Add(sub2);
+        channel.Add(sub1);
+
+        channel.Notify("Video is updated");      
+        
+
     }
 }
