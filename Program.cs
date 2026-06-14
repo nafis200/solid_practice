@@ -1,88 +1,116 @@
 ﻿
-public interface IObserve
+public interface IATMState
 {
-    void update(string message);
+    void InsertCard(ATM atm);
+    void EnterPIN(ATM atm);
+    void WithDrawMoney(ATM atm);
+
 }
 
-public interface ISubject
+class NoStateCard : IATMState
 {
-    void Add(IObserve observe);
-
-    void Remove(IObserve observe);
-
-    void Notify(string message);
-}
-
-public class YoutubeChannel : ISubject
-{
-    private List<IObserve>observes = new List<IObserve>();
-
-    public void Add(IObserve observe)
+    public void InsertCard(ATM atm)
     {
-        observes.Add(observe);
+        Console.WriteLine("Card is Insert");
+        atm.SetState(new PinVerified());
     }
 
-   public void Remove(IObserve observe)
+    public void EnterPIN(ATM atm)
     {
-        if (observes.Contains(observe))
-        {
-            observes.Remove(observe);
-        }
+        Console.WriteLine("Please Insert Card First");
+
     }
 
-    public void Notify(string message)
+    public void WithDrawMoney(ATM atm)
     {
-        foreach(var observe in observes)
-        {
-            observe.update(message);
-        }
-    }
-}
-
-public class Subscribe1: IObserve
-{
-    public void update(string message)
-    {
-        Console.WriteLine($"Subscribe1 is get: {message}");
+        Console.WriteLine("Please Insert Card First");
     }
 }
 
 
-
-public class Subscribe2: IObserve
+class PinVerified : IATMState
 {
-    public void update(string message)
+    public void InsertCard(ATM atm)
     {
-        Console.WriteLine($"Subscribe2 is get: {message}");
+        Console.WriteLine("Card is already Insert");
+    }
+
+    public void EnterPIN(ATM atm)
+    {
+        Console.WriteLine("Your pin is Verified");
+        atm.SetState(new WithDraw());
+
+    }
+
+    public void WithDrawMoney(ATM atm)
+    {
+        Console.WriteLine("Please enter the Pin");
     }
 }
 
-public class Subscribe3: IObserve
+
+class WithDraw : IATMState
 {
-    public void update(string message)
+    public void InsertCard(ATM atm)
     {
-        Console.WriteLine($"Subscribe3 is get: {message}");
+        Console.WriteLine("Pin is Already verified");
+    }
+
+    public void EnterPIN(ATM atm)
+    {
+        Console.WriteLine("Pin is Already verified");
+
+    }
+
+    public void WithDrawMoney(ATM atm)
+    {
+        Console.WriteLine("Money is WithDraw");
     }
 }
 
+public class ATM
+{
+    private IATMState state = new NoStateCard();
+
+    public void SetState(IATMState state)
+    {
+        this.state = state;
+    }
+
+    public void InsertCard()
+    {
+        state.InsertCard(this);
+    }
+
+    public void EnterPIN()
+    {
+        state.EnterPIN(this);
+    }
+    public void WithDrawMoney()
+    {
+        state.WithDrawMoney(this);
+    }
+
+}
 
 class Program
 {
-     static void Main()
+    static void Main(string[] args)
     {
-        IObserve sub = new Subscribe1();
-        IObserve sub1 = new Subscribe2();
-        IObserve sub2 = new Subscribe3();
+        ATM atm = new ATM();
 
+        atm.EnterPIN();
+        atm.WithDrawMoney();
+        atm.InsertCard();
 
-        ISubject channel = new YoutubeChannel();
+        atm.InsertCard();
+        atm.WithDrawMoney();
+        atm.EnterPIN();
 
-        channel.Add(sub);
-        channel.Add(sub2);
-        channel.Add(sub1);
-
-        channel.Notify("Video is updated");      
-        
-
+        atm.InsertCard();
+        atm.EnterPIN();
+        atm.WithDrawMoney();
     }
 }
+
+
